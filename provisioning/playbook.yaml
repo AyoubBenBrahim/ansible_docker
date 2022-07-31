@@ -1,0 +1,122 @@
+---
+- name: install Docker
+  hosts: all
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
+
+  - name: apt-get update
+    become: yes
+    ansible.builtin.apt:
+      update_cache: yes
+      force_apt_get: yes
+
+#   - name: Set up the repository
+#     become: yes
+#     become_method: sudo
+#     ansible.builtin.command: apt-get install curl gnupg lsb-release ca-certificates apt-transport-https -y
+
+
+#   - name: Create a directory if it does not exist
+#     become: yes
+#     become_method: sudo
+#     ansible.builtin.file:
+#       path: /etc/apt/keyrings
+#       state: directory
+
+#   # - name: Add Docker's official GPG key
+#   #   become: yes
+#   #   become_method: sudo
+#   #   ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+#   - name: Add Docker's official GPG key
+#     become: yes
+#     become_method: sudo
+#     apt_key:
+#       url: https://download.docker.com/linux/debian/gpg
+#       state: present
+
+#   - name: apt-get update
+#     become: yes
+#     apt:
+#       update_cache: yes
+#       force_apt_get: yes
+
+#   - name: Set up Docker repository
+#     become: yes
+#     become_method: sudo
+#     apt_repository:
+#       repo: deb https://download.docker.com/linux/debian focal stable
+
+#   # - name: Docker Dependencies
+#   # apt:
+#   #   name:
+#   #     - ca-certificates
+#   #     - curl
+#   #     - gnupg
+#   #     - lsb-release
+#   #   state: present
+#   #   update_cache: yes
+
+  - name: Install pip3
+    become: yes
+    become_method: sudo
+    ansible.builtin.apt:
+      name: 
+      - python3
+      - python3-pip
+
+  - name: Install apt-transport-https
+    become: yes
+    become_method: sudo
+    ansible.builtin.apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - lsb-release
+        - gnupg
+      state: present
+      update_cache: yes
+
+  - name: Add signing key
+    become: yes
+    become_method: sudo
+    ansible.builtin.apt_key:
+      url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+      state: present
+
+  - name: Add repository into sources list
+    become: yes
+    become_method: sudo
+    ansible.builtin.apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+      state: present
+      filename: docker
+
+  - name: apt-get update
+    become: yes
+    become_method: sudo
+    ansible.builtin.apt:
+      update_cache: yes
+      force_apt_get: yes
+
+  - name: Install Docker
+    become: yes
+    become_method: sudo
+    ansible.builtin.apt:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+      state: present
+      update_cache: yes
+
+  - name: Install docker-compose
+    become: yes
+    become_method: sudo
+    ansible.builtin.pip:
+      name:
+        - docker
+        - docker-compose
+      state: present
