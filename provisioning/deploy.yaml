@@ -1,0 +1,47 @@
+---
+- name: My first play
+  hosts: all
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
+
+  - name: Create new Volume
+    become: yes
+    community.docker.docker_volume:
+      name: portainer_data
+
+  - name: Create new network
+    become: yes
+    community.docker.docker_network:
+      name: inception_network
+
+  - name: Deploy Portainer
+    become: yes
+    community.docker.docker_container:
+      name: portainer
+      image: "docker.io/portainer/portainer-ce"
+      ports:
+        - "8000:8000"
+        - "9000:9000"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - portainer_data:/data
+      restart_policy: always
+
+  - name: Ensure Docker image is built from the local Dockerfile.
+    become: yes
+    docker_image:
+      name: nginx
+      source: build
+      build:
+        path: nginx
+      state: present
+
+  - name: Ensure the nginx container is running.
+    become: yes
+    docker_container:
+      image: nginx:latest
+      name: nginx
+      state: started
+
+ 

@@ -1,0 +1,50 @@
+server {
+    # Defines what port Nginx will listen on.
+  listen      443 ssl;
+ 	listen      [::]:443 ssl;
+  ssl on; 
+ 	ssl_protocols   TLSv1.3;
+ 
+ 	ssl_certificate /etc/ssl/inception.crt;
+ 	ssl_certificate_key /etc/ssl/inception.key;
+
+    # Defines which domain names and/or IP addresses this server block should respond for.
+    # Point this directive to your server’s domain name or public IP address.
+    # server_name inception.com www.inception.com;
+
+    #  Defines the document root where the files served by this website are stored.
+    # root /var/www/inception.com/public_html;
+	# root /var/www/html;
+  root /var/www/html/wordpress/;
+ 	index index.php index.html index.htm;
+
+    # Defines in which order Nginx will prioritize index files for this website. 
+
+    # access_log /var/log/nginx/inception.com.access.log;
+    # error_log  /var/log/nginx/inception.com.error.log;
+    access_log /var/log/nginx/access.log;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # location ~ \.php$ {
+    #             try_files $uri /index.php =404;
+    #             fastcgi_pass   wordpress:9000;
+    #             fastcgi_index  index.php;
+    #             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    #             include fastcgi_params;
+    #     }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass wordpress:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+}
+
