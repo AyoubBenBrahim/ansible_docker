@@ -5,43 +5,71 @@
   - name: Ping my hosts
     ansible.builtin.ping:
 
-  - name: Create new Volume
+  - name: Create wordpress Volume
     become: yes
     community.docker.docker_volume:
-      name: portainer_data
+      name: wordpress_vol
 
   - name: Create new network
     become: yes
     community.docker.docker_network:
       name: inception_network
 
-  - name: Deploy Portainer
+  - name: Copy files to the remote machine
     become: yes
-    community.docker.docker_container:
-      name: portainer
-      image: "docker.io/portainer/portainer-ce"
-      ports:
-        - "8000:8000"
-        - "9000:9000"
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - portainer_data:/data
-      restart_policy: always
-
-  - name: Ensure Docker image is built from the local Dockerfile.
+    become_method: sudo
+    copy:
+      src: /Users/aybouras/Desktop/ansible_docker/inception
+      dest: /home
+      mode: preserve
+  
+  - name: build Docker image from the nginx local Dockerfile
     become: yes
-    docker_image:
+    become_method: sudo
+    community.docker.docker_image:
       name: nginx
       source: build
       build:
-        path: nginx
+        path: /home/inception/nginx
       state: present
 
-  - name: Ensure the nginx container is running.
+  - name: run nginx container
     become: yes
-    docker_container:
-      image: nginx:latest
+    community.docker.docker_container:
+      image: nginx
       name: nginx
+      ports:
+        - "8080:8080"
+        - "443:443"
+      networks:
+        - name: inception_network
+      restart_policy: always
       state: started
+      env_file: /home/inception/.env
+      volumes:
+        - wordpress_vol:/var/www/wordpress
 
- 
+  - name: build Docker image from the wordpress Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: wordpress
+      source: build
+      build:
+        path: /home/inception/wordpress
+      state: present
+
+  - name: run wordpress container
+    become: yes
+    community.docker.docker_container:
+      image: wordpress
+      name: wordpress
+      ports:
+        - "9000:9000"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env_file: /home/inception/.env
+      volumes:
+        - wordpress_vol:/var/www/wordpress
