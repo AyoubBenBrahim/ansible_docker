@@ -1,8 +1,18 @@
 
-docker rm -f $(docker ps -a -q)
+---
+- name: rm containers
+  hosts: all
+  tasks:
+  - name: Ping my hosts
+    ansible.builtin.ping:
 
-docker rmi -f $(docker image ls -q)
+  - name: clear docker
+    become: yes
+    become_method: sudo
+    ansible.builtin.shell: |
+      docker rm -f $(docker ps -a -q)
+      docker rmi -f $(docker image ls -q)
+      # docker volume rm -f $(docker volume ls -q)
+      docker network rm $(docker network ls -q)
 
-docker volume rm -f $(docker volume ls -q)
-
-docker network rm $(docker network ls -q)
+      exit 0

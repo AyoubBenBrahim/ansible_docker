@@ -1,5 +1,5 @@
 ---
-- name: My first play
+- name: my Cloud infra setting..
   hosts: all
   tasks:
   - name: Ping my hosts
@@ -9,6 +9,16 @@
     become: yes
     community.docker.docker_volume:
       name: wordpress_vol
+
+  - name: Create mariadb Volume
+    become: yes
+    community.docker.docker_volume:
+      name: mariadb_vol
+  
+  - name: Create phpMyAdmin Volume
+    become: yes
+    community.docker.docker_volume:
+      name: phpadmn_vol
 
   - name: Create new network
     become: yes
@@ -48,6 +58,31 @@
       env_file: /home/inception/.env
       volumes:
         - wordpress_vol:/var/www/wordpress
+
+  - name: build Docker image from the mariadb Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: mariadb
+      source: build
+      build:
+        path: /home/inception/mariadb
+      state: present
+
+  - name: run mariadb container
+    become: yes
+    community.docker.docker_container:
+      image: mariadb
+      name: mariadb
+      ports:
+        - "3306:3306"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env_file: /home/inception/.env
+      volumes:
+        - mariadb_vol:/var/lib/mysql
 
   - name: build Docker image from the wordpress Dockerfile
     become: yes
