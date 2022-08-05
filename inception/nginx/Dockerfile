@@ -9,9 +9,9 @@ RUN openssl req  -nodes -new -x509 -days 3650 -keyout /etc/ssl/inception.key -ou
 COPY ./conf/default /etc/nginx/sites-available/
 COPY ./conf/index.html /var/www/html
 
-# RUN rm -rf /var/www/html  
+RUN rm -rf /var/www/html  
 RUN mkdir -p /var/www/wordpress
-# RUN mkdir -p /var/www/adminer
+RUN mkdir -p /var/www/phpmyadmin
 
 # EXPOSE 443
 

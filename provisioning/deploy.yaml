@@ -18,9 +18,9 @@
   - name: Create phpMyAdmin Volume
     become: yes
     community.docker.docker_volume:
-      name: phpadmn_vol
+      name: phpmyadmin_vol
 
-  - name: Create new network
+  - name: Create network
     become: yes
     community.docker.docker_network:
       name: inception_network
@@ -58,6 +58,7 @@
       env_file: /home/inception/.env
       volumes:
         - wordpress_vol:/var/www/wordpress
+        - phpmyadmin_vol:/var/www/phpmyadmin
 
   - name: build Docker image from the mariadb Dockerfile
     become: yes
@@ -108,3 +109,28 @@
       env_file: /home/inception/.env
       volumes:
         - wordpress_vol:/var/www/wordpress
+
+  - name: build Docker image from the phpMyAdmin Dockerfile
+    become: yes
+    become_method: sudo
+    community.docker.docker_image:
+      name: phpmyadmin
+      source: build
+      build:
+        path: /home/inception/phpmyadmin
+      state: present
+
+  - name: run phpMyAdmin container
+    become: yes
+    community.docker.docker_container:
+      image: phpmyadmin
+      name: phpmyadmin
+      ports:
+        - "7000:7000"
+      networks:
+        - name: inception_network
+      restart_policy: always
+      state: started
+      env_file: /home/inception/.env
+      volumes:
+        - phpmyadmin_vol:/var/www/phpmyadmin
