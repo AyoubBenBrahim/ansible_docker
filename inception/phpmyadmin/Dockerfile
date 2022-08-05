@@ -4,21 +4,12 @@ LABEL version="1.0" \
    description="This Is a phpmyadmin Image" \
    maintainer="ayoub@gmail.com"
 
-# # RUN apt-get update \
-# #    && apt-get upgrade -y \
-# #    && apt-get install php-fpm php-mysql -y
-
-# RUN apt-get update \
-# 	&& apt-get upgrade -y \
-# 	php-cgi php-common php-fpm php-pear php-mbstring \
-# 	php-zip php-net-socket php-gd php-xml-util \
-# 	php-gettext php-mysql php-bcmath  vim curl unzip wget git -y \
-# 	mariadb-client -y
-
-RUN apt-get update && apt-get install -y \
-    php-cgi php-common php-fpm php-pear php-mbstring \
-    php-zip php-net-socket php-gd php-xml-util \
-    php-gettext php-mysql php-bcmath wget
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	php-cgi php-common php-fpm php-pear php-mbstring \
+	php-zip php-net-socket php-gd php-xml-util \
+	php-gettext php-mysql php-bcmath  vim curl unzip wget git -y \
+	mariadb-client -y
 
 RUN mkdir -p /var/www/phpmyadmin
 
