@@ -13,7 +13,5 @@ RUN rm -rf /var/www/html
 RUN mkdir -p /var/www/wordpress
 RUN mkdir -p /var/www/phpmyadmin
 
-# EXPOSE 443
-
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
