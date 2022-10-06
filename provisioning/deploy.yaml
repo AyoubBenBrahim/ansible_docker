@@ -1,5 +1,5 @@
 ---
-- name: my Cloud infra setting..
+- name: my Cloud infra settings..
   hosts: all
   tasks:
   - name: Ping my hosts
@@ -20,7 +20,7 @@
     community.docker.docker_volume:
       name: phpmyadmin_vol
 
-  - name: Create network
+  - name: Create underlay network
     become: yes
     community.docker.docker_network:
       name: inception_network
@@ -33,7 +33,7 @@
       dest: /home
       mode: preserve
   
-  - name: build Docker image from the nginx local Dockerfile
+  - name: build nginx image from the local Dockerfile
     become: yes
     become_method: sudo
     community.docker.docker_image:
@@ -60,7 +60,7 @@
         - wordpress_vol:/var/www/wordpress
         - phpmyadmin_vol:/var/www/phpmyadmin
 
-  - name: build Docker image from the mariadb Dockerfile
+  - name: build mariadb image from the Dockerfile
     become: yes
     become_method: sudo
     community.docker.docker_image:
@@ -85,7 +85,7 @@
       volumes:
         - mariadb_vol:/var/lib/mysql
 
-  - name: build Docker image from the wordpress Dockerfile
+  - name: build wordpress image from the Dockerfile
     become: yes
     become_method: sudo
     community.docker.docker_image:
@@ -110,7 +110,7 @@
       volumes:
         - wordpress_vol:/var/www/wordpress
 
-  - name: build Docker image from the phpMyAdmin Dockerfile
+  - name: build phpMyAdmin image from the Dockerfile
     become: yes
     become_method: sudo
     community.docker.docker_image:
