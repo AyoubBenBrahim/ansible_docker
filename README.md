@@ -1,6 +1,6 @@
 
 python3 -m pip install --user ansible
-export PATH="/Users/aybouras/Library/Python/3.9/bin:$PATH"
+export PATH="/Users/ayb*****/Library/Python/3.9/bin:$PATH"
 
 
 ssh-keyscan -H 192.168.42.20 >> ~/.ssh/known_hosts
